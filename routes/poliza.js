@@ -16,7 +16,7 @@ router.get('/get/:id',[md_auth.ensureAuth], polizaCtrl.get);
 router.get('/getCliente/:id', polizaCtrl.getXCliente);
 router.get('/getTodas',[md_auth.ensureAuth], polizaCtrl.getTodas);
 router.delete('/delete/:id',[md_auth.ensureAuth, md_admin.isAdmin], polizaCtrl.borrar); 
-router.put('/uploadImage/:id',[md_auth.ensureAuth, md_upload], polizaCtrl.subirImagenPoliza);
+router.put('/uploadImage/:id',md_upload, polizaCtrl.subirImagenPoliza);
 router.get('/getImage/:imageFile', polizaCtrl.obtenerImagen);
 
 module.exports = router
