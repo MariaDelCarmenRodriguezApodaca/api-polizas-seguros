@@ -95,7 +95,7 @@ function getXCliente(req,res){
 
 function subirImagenPoliza(req, res) {
     var polizaId = req.params.id;
-    console.log(Object.keys(req.files['pdf']));
+    // console.log(Object.keys(req.files['pdf']));
     // return null;
     if (Object.keys(req.files).length >= 1) {
         var file_path = req.files.pdf.path; //image es el nombre del fichero que se envio en este caso se tendra que mandar con el nombre image
