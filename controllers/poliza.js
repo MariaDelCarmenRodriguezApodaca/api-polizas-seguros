@@ -111,7 +111,7 @@ function subirImagenPoliza(req, res) {
                 if (err) return res.status(500).send({ message: `Error al actualizar empleado` });
                 if (!polizaActualizada) return res.status(404).send({ message: `No se logro actualizar la poliza` });
                 //si no ocurrio error y si se actualizo :
-                res.status(200).send({ poliza: polizaActualizada });
+                return res.status(200).send({ poliza: polizaActualizada });
             });
         } else {
             //si la extencion no es valida eliminamos el archivo con el modulo fs que ya viene con node
@@ -122,7 +122,7 @@ function subirImagenPoliza(req, res) {
             return res.status(500).send({ message: `Extencion no valida` });
         }
 
-    } else res.status(404).send({ message: `No se a mandado ninguna imagen` });
+    } else return res.status(404).send({ message: `No se a mandado ninguna imagen` });
 }
 
 function obtenerImagen(req, res) {
