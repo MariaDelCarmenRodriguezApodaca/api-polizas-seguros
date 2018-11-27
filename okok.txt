@@ -1,0 +1,10 @@
+controladores | Terminados
+-------------------------
+empleado      |     *
+cliente       |     *
+compañia      |     *
+cobertura     |     *
+tipo_poliza   |     *
+poliza        |     *
+anuncio       |     *
+pendiente     |
