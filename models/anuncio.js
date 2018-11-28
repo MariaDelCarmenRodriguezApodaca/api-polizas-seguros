@@ -7,7 +7,7 @@ let anuncioSchema = Schema({
     titulo:{ type:String, maxlength:55, required:[true,'El titulo es obligatorio y puede medir maximo 25 caracteres'] },
     contenido:String,
     status:{ type:String, required:true },
-    urlImagen:String,
+    urlImage:String,
     public_id:String
 });
 
