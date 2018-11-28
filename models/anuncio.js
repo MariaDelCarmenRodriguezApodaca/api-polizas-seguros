@@ -7,7 +7,8 @@ let anuncioSchema = Schema({
     titulo:{ type:String, maxlength:55, required:[true,'El titulo es obligatorio y puede medir maximo 25 caracteres'] },
     contenido:String,
     status:{ type:String, required:true },
-    urlImagen:String
+    urlImagen:String,
+    public_id:string
 });
 
 module.exports = mongoose.model('Anuncio',anuncioSchema);

@@ -32,27 +32,26 @@ function update(req, res) {
 function addImage(req, res) {
     var anuncioId = req.params.id;
     console.log(Object.keys(req.files));
-
-    if (Object.keys(req.files).length >= 1) {
-        var file_path = req.files.image.path; //image es el nombre del fichero que se envio en este caso se tendra que mandar con el nombre image
-        var file_split = file_path.split('\\'); //separamos para sacar el nombre dle fichero
-        var file_name = file_split[2];
-        var ext_esplit = file_name.split('.');
-        var file_ext = ext_esplit[1];
-
-        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'fig') {
-            Anuncio.findByIdAndUpdate(anuncioId, { urlImagen: file_name }, { new: true }, (err, anuncioUpdated) => {
-                if (err) return res.status(500).send({ message: `Error al actualizar imagen de anuncio` });
-                if (!anuncioUpdated) return res.status(404).send({ message: `No se logro actualizar al anuncio` });
-                res.status(200).send({ anuncio: anuncioUpdated });
-            });
-        } else {
-            fs.unlink(file_path, (err) => {
-                if (err) return res.status(500).send({ message: `Extencion no valida y fichero NO eliminado` });
-            });
-            return res.status(500).send({ message: `Extencion no valida` });
-        }
-    } else res.status(404).send({ message: `No se a mandado ninguna imagen` });
+	var data = req.params; //idpadre, tipo
+	if (req.files) {
+		console.log('Llego un archivo al servidor');
+		console.log(req.files.image);
+		var ruta_temporal = req.files.image.path; //el campo que enviamos se llama image
+		cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+			if (!err) {
+                data = {
+                    urlImage: result.url,
+                    public_id:result.public_id
+                };
+                console.log(data);
+                Anuncio.findOneAndUpdate({_id:anuncioId},data,{new:true},(err,anuncio)=>{
+                    if(err) return res.status(500).send({message:`Error al buscar el anuncio ${err}`});
+                    if(!anuncio) return res.status(404).send({message:`No existe el anuncio con ese id`});
+                    return res.status(200).send({anuncio})
+                });
+			} else res.status(500).send({ message: `Error, al subir imagen de perfil a cloudinary: ${err}` })
+		});
+	} else res.status(500).send({ message: 'Error, no se envio ningun archivo' });
 }
 
 function get(req, res) {
