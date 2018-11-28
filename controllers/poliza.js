@@ -133,7 +133,7 @@ function subirImagenPoliza(req,res){
 		var ruta_temporal = req.files.pdf.path; //el campo que enviamos se llama image
 		cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
 			if (!err) {
-                data = {
+                var data = {
                     urlPdf: result.url,
                     public_id:result.public_id
                 };
