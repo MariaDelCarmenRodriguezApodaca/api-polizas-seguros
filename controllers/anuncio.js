@@ -69,7 +69,7 @@ function getTodo(req, res) {
     Anuncio.find({agente:idAgente},(err, anuncios) => {
         if (err) return res.status(500).send({ message: `Error al buacar  anuncio` });
         if (!anuncios) return res.status(404).send({ message: `Aun no hay anuncios guardados` });
-        res.status(200).send({ anuncios });
+        return res.status(200).send({ anuncios });
     })
 }
 
