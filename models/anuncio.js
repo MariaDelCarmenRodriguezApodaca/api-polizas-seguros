@@ -8,7 +8,7 @@ let anuncioSchema = Schema({
     contenido:String,
     status:{ type:String, required:true },
     urlImagen:String,
-    public_id:string
+    public_id:String
 });
 
 module.exports = mongoose.model('Anuncio',anuncioSchema);
