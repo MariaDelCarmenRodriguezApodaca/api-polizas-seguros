@@ -4,6 +4,13 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const bcryp = require('bcrypt-nodejs');
 const jwt = require('./services/jwt');
+var cloudinary = require ('cloudinary');
+
+cloudinary.config ({ 
+    cloud_name : 'dab2v7vdj' , 
+    api_key : '722812522231572' , 
+    api_secret : 'TIi3n-WJEWF6qlmmtWFRzu55PMo'  
+ });
 
 var app = express();
 //MIDDLEWARES

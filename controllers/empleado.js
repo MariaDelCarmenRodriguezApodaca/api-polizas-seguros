@@ -8,6 +8,8 @@ var path = require('path'); //path nos regresa rutas de ficheros en el servidor
 const Empleado = require('../models/empelado');
 //SERVICIOS
 const jwt = require('../services/jwt');
+var cloudinary = require ( 'cloudinary' );
+
 
 function addEmpleado(req, res) {
     var data = req.body;
@@ -81,46 +83,68 @@ function actualizarEmpleado(req, res) {
         //si no ocurrio error y si se actualizo :
         res.status(200).send({ user: userUpdated });
     });
-
-
 }
 
-function subirImagenPerfil(req, res) {
+// function subirImagenPerfil(req, res) {
+//     var empleadoId = req.params.id;
+//     console.log(Object.keys(req.files));
+
+//     if (Object.keys(req.files).length >= 1) {
+//         var file_path = req.files.image.path; //image es el nombre del fichero que se envio en este caso se tendra que mandar con el nombre image
+//         var file_split = file_path.split('\\'); //separamos para sacar el nombre dle fichero
+//         var file_name = file_split[2];
+//         var ext_esplit = file_name.split('.');
+//         var file_ext = ext_esplit[1];
+//         if (empleadoId != req.user.sub) { //validamos que el empleado tenga permisos de actualizar la imagen de perfil
+//             fs.unlink(file_path, (err) => {
+//                 //con el metodo unLink eliminamos un archivo, le pasamos como parametro un path y un callback el nos regresa un err en caso de exitirlo
+//                 if (err) return res.status(500).send({ message: `No tienes permiso para editar y fichero NO eliminado` });
+//             });
+//             return res.status(500).send({ message: `No tienes permiso para editar este usuario` });
+//         }
+//         //validamos que sea una imagen 
+//         if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'fig') {
+//             //validacion del usuario
+//             Empleado.findByIdAndUpdate(empleadoId, { urlImagenPerfil: file_name }, { new: true }, (err, empleadoActualizado) => {
+//                 if (err) return res.status(500).send({ message: `Error al actualizar empleado` });
+//                 if (!empleadoActualizado) return res.status(404).send({ message: `No se logro actualizar al empleado` });
+//                 //si no ocurrio error y si se actualizo :
+//                 res.status(200).send({ empleado: empleadoActualizado });
+//             });
+//         } else {
+//             //si la extencion no es valida eliminamos el archivo con el modulo fs que ya viene con node
+//             fs.unlink(file_path, (err) => {
+//                 //con el metodo unLink eliminamos un archivo, le pasamos como parametro un path y un callback el nos regresa un err en caso de exitirlo
+//                 if (err) return res.status(500).send({ message: `Extencion no valida y fichero NO eliminado` });
+//             });
+//             return res.status(500).send({ message: `Extencion no valida` });
+//         }
+
+//     } else res.status(404).send({ message: `No se a mandado ninguna imagen` });
+// }
+
+function subirImagenPerfil(req,res){
     var empleadoId = req.params.id;
-    console.log(Object.keys(req.files));
-
-    if (Object.keys(req.files).length >= 1) {
-        var file_path = req.files.image.path; //image es el nombre del fichero que se envio en este caso se tendra que mandar con el nombre image
-        var file_split = file_path.split('\\'); //separamos para sacar el nombre dle fichero
-        var file_name = file_split[2];
-        var ext_esplit = file_name.split('.');
-        var file_ext = ext_esplit[1];
-        if (empleadoId != req.user.sub) { //validamos que el empleado tenga permisos de actualizar la imagen de perfil
-            fs.unlink(file_path, (err) => {
-                //con el metodo unLink eliminamos un archivo, le pasamos como parametro un path y un callback el nos regresa un err en caso de exitirlo
-                if (err) return res.status(500).send({ message: `No tienes permiso para editar y fichero NO eliminado` });
-            });
-            return res.status(500).send({ message: `No tienes permiso para editar este usuario` });
-        }
-        //validamos que sea una imagen 
-        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'fig') {
-            //validacion del usuario
-            Empleado.findByIdAndUpdate(empleadoId, { urlImagenPerfil: file_name }, { new: true }, (err, empleadoActualizado) => {
-                if (err) return res.status(500).send({ message: `Error al actualizar empleado` });
-                if (!empleadoActualizado) return res.status(404).send({ message: `No se logro actualizar al empleado` });
-                //si no ocurrio error y si se actualizo :
-                res.status(200).send({ empleado: empleadoActualizado });
-            });
-        } else {
-            //si la extencion no es valida eliminamos el archivo con el modulo fs que ya viene con node
-            fs.unlink(file_path, (err) => {
-                //con el metodo unLink eliminamos un archivo, le pasamos como parametro un path y un callback el nos regresa un err en caso de exitirlo
-                if (err) return res.status(500).send({ message: `Extencion no valida y fichero NO eliminado` });
-            });
-            return res.status(500).send({ message: `Extencion no valida` });
-        }
-
-    } else res.status(404).send({ message: `No se a mandado ninguna imagen` });
+	var data = req.params; //idpadre, tipo
+	if (req.files) {
+		console.log('Llego un archivo al servidor');
+		console.log(req.files.image);
+		var ruta_temporal = req.files.image.path; //el campo que enviamos se llama image
+		cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+			if (!err) {
+                data = {
+                    urlImage: result.url,
+                    public_id:result.public_id
+                };
+                console.log(data);
+                Empleado.findOneAndUpdate({_id:empleadoId},data,{new:true},(err,empleado)=>{
+                    if(err) return res.status(500).send({message:`Error al buescar el empleado ${err}`});
+                    if(!empleado) return res.status(404).send({message:`No existe el empleado con ese id`});
+                    return res.status(200).send({empleado})
+                });
+			} else res.status(500).send({ message: `Error, al subir imagen de perfil a cloudinary: ${err}` })
+		});
+	} else res.status(500).send({ message: 'Error, no se envio ningun archivo' });
 }
 
 function obtenerImagen(req, res) {

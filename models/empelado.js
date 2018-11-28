@@ -13,7 +13,8 @@ var empleadoSchema = Schema({
     usuario: { type:String, required:true },
     password: { type:String, required:true },
     role:{ type:String, required:true },
-    urlImagenPerfil:String
+    urlImage:String,
+    public_id:String
 });
 
 module.exports = mongoose.model('Empleado',empleadoSchema);

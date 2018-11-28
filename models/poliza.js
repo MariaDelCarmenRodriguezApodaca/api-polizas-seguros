@@ -11,7 +11,8 @@ let polizaSchema = Schema({
     fechaInicio: { type:String, maxlength:15, required:true},
     fechaFin: { type:String, maxlength:15, required:true},
     status: { type:String, required:true },
-    urlImagen: String
+    urlPdf: String,
+    public_id:String
 });
 
 module.exports = mongoose.model('Poliza',polizaSchema);
