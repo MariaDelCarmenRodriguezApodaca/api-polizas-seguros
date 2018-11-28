@@ -2,7 +2,7 @@
 var fs = require('fs');
 var path = require('path'); //path nos regresa rutas de ficheros en el servidor 
 const Anuncio = require('../models/anuncio');
-
+const cloudinary = require('cloudinary');
 
 function add(req, res) {
     var data = req.body;
