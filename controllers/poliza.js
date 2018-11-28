@@ -127,7 +127,6 @@ function getXCliente(req,res){
 
 function subirImagenPoliza(req,res){
     var idPolza = req.params.id;
-	var data = req.params; //idpadre, tipo
 	if (req.files) {
 		console.log('Llego un archivo al servidor');
 		console.log(req.files.pdf);
