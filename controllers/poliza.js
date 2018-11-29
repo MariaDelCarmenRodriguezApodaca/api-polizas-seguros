@@ -4,13 +4,13 @@ const Poliza = require('../models/poliza');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
-const cloudinary =  require('cloudinary')
+const cloudinary = require('cloudinary')
 
 function add(req, res) {
     var agente;
-    if(req.user.role =='AGENTE'){
+    if (req.user.role == 'AGENTE') {
         agente = req.user.sub;
-    }else{
+    } else {
         agente = req.user.agente;
     }
     var data = req.body;
@@ -65,12 +65,12 @@ function get(req, res) {
 
 function getTodas(req, res) {
     var agente;
-    if(req.user.role =='AGENTE'){
+    if (req.user.role == 'AGENTE') {
         agente = req.user.sub;
-    }else{
+    } else {
         agente = req.user.agente;
     }
-    Poliza.find({agente:agente})
+    Poliza.find({ agente: agente })
         .populate('idCliente')
         .populate({ path: 'idTipoPoliza', populate: { path: 'idCompania' }, populate: { path: 'idCobertura' } })
         .exec((err, polizas) => {
@@ -80,9 +80,9 @@ function getTodas(req, res) {
         });
 }
 
-function getXCliente(req,res){
+function getXCliente(req, res) {
     let cliente = req.params.id;
-    Poliza.find({idCliente:cliente})
+    Poliza.find({ idCliente: cliente })
         .populate('idCliente')
         .populate({ path: 'idTipoPoliza', populate: { path: 'idCompania' }, populate: { path: 'idCobertura' } })
         .exec((err, polizas) => {
@@ -125,27 +125,30 @@ function getXCliente(req,res){
 //     } else return res.status(404).send({ message: `No se a mandado ninguna imagen` });
 // }
 
-function subirImagenPoliza(req,res){
+function subirImagenPoliza(req, res) {
     var idPolza = req.params.id;
-	if (req.files) {
-		console.log('Llego un archivo al servidor');
-		console.log(req.files.pdf);
-		var ruta_temporal = req.files.pdf.path; //el campo que enviamos se llama image
-		cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
-			if (!err) {
+    if (req.files) {
+        console.log('Llego un archivo al servidor');
+        console.log(req.files.pdf);
+        var ruta_temporal = req.files.pdf.path; //el campo que enviamos se llama image
+        cloudinary.v2.uploader.upload(ruta_temporal, (err, result) => {
+            if (!err) {
                 var data = {
                     urlPdf: result.url,
-                    public_id:result.public_id
+                    public_id: result.public_id
                 };
                 console.log(data);
-                Poliza.findOneAndUpdate({_id:idPolza},data,{new:true},(err,poliza)=>{
-                    if(err) return res.status(500).send({message:`Error al buescar poliza ${err}`});
-                    if(!poliza) return res.status(404).send({message:`No existe la poliza con ese id`});
-                    return res.status(200).send({poliza})
+                Poliza.findOneAndUpdate({ _id: idPolza }, data, { new: true }, (err, poliza) => {
+                    if (err) return res.status(500).send({ message: `Error al buescar poliza ${err}` });
+                    if (!poliza) return res.status(404).send({ message: `No existe la poliza con ese id` });
+                    return res.status(200).send({ poliza })
                 });
-			} else res.status(500).send({ message: `Error, al subir pdf de poliza  a cloudinary: ${err}` })
-		});
-	} else res.status(500).send({ message: 'Error, no se envio ningun archivo' });
+            } else {
+                console.log(err);
+                return res.status(500).send({ message:err })
+            }
+        });
+    } else return res.status(500).send({ message: 'Error, no se envio ningun archivo' });
 }
 
 
