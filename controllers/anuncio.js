@@ -90,7 +90,7 @@ function borrar(req, res) {
     let anuncioId = req.params.id;
     Anuncio.findByIdAndDelete(anuncioId, (err, anuncio) => {
         if (err) return res.status(500).send({ message: `Error al buacar  anuncio` });
-        if (!anuncioUpdated) return res.status(404).send({ message: `No se lencontro el anuncio` });
+        if (!anuncio) return res.status(404).send({ message: `No se lencontro el anuncio` });
         res.status(200).send({ anuncio });
     })
 }

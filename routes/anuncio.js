@@ -16,6 +16,6 @@ router.put('/addImage/:id',[md_auth.ensureAuth, md_employe.isEmpleado, md_upload
 router.get('/getImage/:imageFile',anuncioCrtl.obtenerImagen);
 router.get('/get/:id',md_auth.ensureAuth, anuncioCrtl.get);
 router.get('/getTodos/:idAgente',md_auth.ensureAuth, anuncioCrtl.getTodo);
-router.delete('/delete',[md_auth.ensureAuth, md_employe.isEmpleado],anuncioCrtl.borrar);
+router.delete('/delete/:id',[md_auth.ensureAuth, md_employe.isEmpleado],anuncioCrtl.borrar);
 
 module.exports = router;
